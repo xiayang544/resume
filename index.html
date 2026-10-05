@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>夏洋 · 简历 | 后训练 / 训推算法</title>
+<style>
+:root{
+  color-scheme:light;
+  --s1:#2a78d6;  --s1-tint:#eaf1fc;  /* 模型能力整合 */
+  --s2:#eb6834;  --s2-tint:#fdf0e9;  /* 分层建模 */
+  --s3:#1baf7a;  --s3-tint:#e9f8f2;  /* 业务闭环 */
+  --s4:#eda100;  --s4-tint:#fdf6e4;  /* 训推优化 */
+  --text:#14233c; --muted:#64748b; --faint:#8e99aa;
+  --grid:#e1e6ef; --border:#dfe8f6;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;padding:0 0 60px;
+  background:#f7f9fd;color:var(--text);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;
+}
+.page{max-width:1080px;margin:0 auto;padding:0 20px}
+.card{
+  border:1px solid var(--border);border-radius:24px;
+  background:linear-gradient(145deg,#f8fbff,#fff 55%,#faf8ff);
+  box-shadow:0 20px 55px rgba(37,80,145,.10);
+  padding:28px;margin-bottom:24px;
+}
+
+/* ---------- sticky nav ---------- */
+nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(247,249,253,.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  padding:10px 0;margin-bottom:26px;
+}
+nav .page{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+nav .brand{font-size:15px;font-weight:900;margin-right:12px}
+nav a{
+  font-size:12.5px;font-weight:750;color:#475569;text-decoration:none;
+  background:#fff;border:1px solid var(--border);border-radius:20px;padding:5px 13px;
+  transition:all .15s;
+}
+nav a:hover{color:var(--s1);border-color:#b9d2f2;background:#f0f6fe}
+nav .spacer{flex:1}
+nav .contact{font-size:12px;color:var(--muted);font-weight:650}
+
+/* ---------- header ---------- */
+.head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:20px;margin-bottom:18px}
+.head h1{margin:0;font-size:34px;letter-spacing:1px}
+.head .sub{font-size:14.5px;color:var(--muted);font-weight:650;margin-top:8px;line-height:1.7}
+.head .sub b{color:var(--text)}
+.head .side{font-size:12.5px;color:var(--muted);text-align:right;line-height:1.8}
+.head .side b{color:var(--text)}
+.lead{
+  margin:0;padding:14px 18px;border-left:3px solid var(--s1);
+  background:#f4f8fe;border-radius:0 12px 12px 0;
+  font-size:14.5px;font-weight:650;line-height:1.75;
+}
+.lead b{color:var(--s1)}
+
+/* ---------- section headers ---------- */
+h2.sec{margin:0 0 4px;font-size:21px;display:flex;align-items:center;gap:12px}
+h2.sec .num{
+  font-size:12px;font-weight:850;color:var(--s1);background:var(--s1-tint);
+  border-radius:8px;padding:3px 10px;letter-spacing:1px;
+}
+.sec-sub{font-size:13px;color:var(--muted);margin:4px 0 18px;line-height:1.6}
+
+/* ---------- skill x experience map ---------- */
+.map-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:8px}
+.map-head .hint{font-size:12px;color:var(--muted)}
+.map-head .hint kbd{
+  font:inherit;font-weight:800;color:var(--text);
+  background:#eef3fa;border:1px solid #d8e2f0;border-radius:6px;padding:1px 7px;
+}
+.map{position:relative;display:grid;grid-template-columns:290px 1fr;min-height:100px}
+#links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+#links path{fill:none;stroke-width:2.5;stroke-linecap:round;opacity:.8;transition:opacity .18s}
+.col{position:relative;z-index:1;display:flex;flex-direction:column;gap:12px}
+
+.pillar{
+  background:#fff;border:1px solid var(--border);border-radius:14px;
+  padding:13px 15px 12px;cursor:pointer;position:relative;
+  border-left:4px solid var(--pc);
+  transition:opacity .18s,box-shadow .18s,transform .18s;
+}
+.pillar .p-name{font-size:15px;font-weight:850;display:flex;align-items:center;gap:8px}
+.pillar .p-dot{width:11px;height:11px;border-radius:50%;background:var(--pc);flex:none;box-shadow:0 0 0 2.5px #fff}
+.pillar .p-sub{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.6}
+.pillar .p-n{
+  position:absolute;top:12px;right:13px;font-size:10.5px;font-weight:800;color:var(--pc);
+  background:var(--pt);border-radius:20px;padding:2px 9px;
+}
+.pillar:hover{transform:translateX(3px)}
+
+.org{font-size:11px;font-weight:800;letter-spacing:1.5px;color:var(--faint);margin:4px 0 -4px;display:flex;align-items:center;gap:8px}
+.org::after{content:"";flex:1;height:1px;background:var(--grid)}
+.exp{
+  background:#fff;border:1px solid var(--border);border-radius:14px;
+  padding:11px 14px 10px;cursor:pointer;
+  transition:opacity .18s,box-shadow .18s;
+  display:flex;align-items:center;gap:12px;
+}
+.exp .e-dots{flex:none;display:flex;flex-direction:column;gap:3px;width:12px;align-self:stretch;justify-content:center}
+.exp .e-dots i{width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 2px #fff}
+.exp .e-body{flex:1;min-width:0}
+.exp .e-title{font-size:13.5px;font-weight:800;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.exp .e-title .e-metrics{font-size:11px;font-weight:800;color:#34517e;margin-left:auto;white-space:nowrap}
+.exp .e-line{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.5}
+
+.dim{opacity:.13}
+#links path.dim{opacity:.05}
+.pillar.lit,.exp.lit{box-shadow:0 8px 24px rgba(37,80,145,.16);border-color:#c6d6f0}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;padding-top:14px;border-top:1px dashed var(--grid)}
+.legend .lg{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:750;color:#475569;background:#fff;border:1px solid var(--border);border-radius:20px;padding:4px 12px 4px 9px}
+.legend .lg i{width:9px;height:9px;border-radius:50%}
+.legend .note{font-size:11px;color:var(--faint);font-weight:650;margin-left:auto}
+
+[data-scope="s1"]{--pc:var(--s1);--pt:var(--s1-tint)}
+[data-scope="s2"]{--pc:var(--s2);--pt:var(--s2-tint)}
+[data-scope="s3"]{--pc:var(--s3);--pt:var(--s3-tint)}
+[data-scope="s4"]{--pc:var(--s4);--pt:var(--s4-tint)}
+
+/* ---------- tech chips ---------- */
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chips span{font-size:11px;font-weight:750;color:#475569;background:#fff;border:1px solid var(--border);border-radius:20px;padding:3px 11px}
+
+/* ---------- project blocks ---------- */
+.proj{border:1px solid var(--border);border-radius:18px;background:#fff;padding:20px 22px;margin-bottom:16px}
+.proj .p-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.proj .p-head .p-name{font-size:16.5px;font-weight:850}
+.proj .p-head .p-badges{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.proj .p-head .p-badges b{
+  font-size:10.5px;font-weight:800;color:var(--text);background:var(--pt,#f1f5fb);
+  border-radius:6px;padding:3px 9px;
+}
+.proj .p-bg{font-size:12.5px;color:var(--muted);line-height:1.65;margin:6px 0 10px}
+.proj .p-bg b{color:var(--text)}
+.kv{display:grid;grid-template-columns:64px 1fr;gap:4px 14px;font-size:12.5px;line-height:1.65}
+.kv .k{font-weight:850;color:#34517e;white-space:nowrap}
+.kv .v{color:var(--muted)}
+.kv .v b{color:var(--text);font-weight:750}
+.proj .p-res{
+  margin-top:12px;font-size:12.5px;font-weight:750;line-height:1.6;
+  background:#f2f7ef;border-left:3px solid #4e9e51;border-radius:0 10px 10px 0;padding:10px 14px;color:#2e4a2f;
+}
+.proj .p-res em{font-style:normal;font-weight:900;color:#1d6b21}
+
+/* ---------- inline charts (from interview deck) ---------- */
+.chart-wrap{margin:14px 0 4px;border:1px dashed #dbe5f3;border-radius:14px;padding:12px 14px 8px;background:#fcfdff}
+.chart-cap{font-size:11px;color:var(--faint);font-weight:700;margin:2px 4px 8px}
+.chart-wrap svg{display:block;width:100%;height:auto;overflow:visible}
+.chart-wrap img{display:block;width:100%;height:auto;border-radius:10px}
+
+/* iteration-curve chart styles (scoped copy of chart asset) */
+.ic .axis{stroke:#8e99aa;stroke-width:1.35;fill:none}
+.ic .grid{stroke:#d7e3f4;stroke-width:1;stroke-dasharray:4 5}
+.ic .tick-label{fill:#6b7280;font-size:11px;font-weight:650}
+.ic .axis-label{fill:#475569;font-size:12px;font-weight:800}
+.ic .stage-label{fill:#334155;font-size:12px;font-weight:800}
+.ic .sub-label{fill:#7c8798;font-size:10.5px;font-weight:650}
+.ic .line-shadow-blue,.ic .line-shadow-purple{fill:none;stroke-width:11;stroke-linecap:round;stroke-linejoin:round}
+.ic .line-shadow-blue{stroke:rgba(23,105,232,.10)}
+.ic .line-shadow-purple{stroke:rgba(109,80,215,.10)}
+.ic .line-blue,.ic .line-purple{fill:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1400;stroke-dashoffset:1400;animation:icDraw 2.2s cubic-bezier(.2,.75,.2,1) forwards}
+.ic .line-blue{stroke:url(#icBlueGrad)}
+.ic .line-purple{stroke:url(#icPurpleGrad);animation-delay:.2s}
+.ic .flow-blue,.ic .flow-purple{fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-dasharray:4 22;animation:icFlow 1.05s linear infinite}
+.ic .dot-blue,.ic .dot-purple{stroke:#fff;stroke-width:3;filter:drop-shadow(0 4px 6px rgba(15,23,42,.18))}
+.ic .dot-blue{fill:#1769e8}
+.ic .dot-purple{fill:#6d50d7}
+.ic .value-blue{fill:#1769e8;font-size:14px;font-weight:900}
+.ic .value-purple{fill:#6d50d7;font-size:14px;font-weight:900}
+.ic .teacher-path{fill:none;stroke:#9aa6b8;stroke-width:2.5;stroke-linecap:round;stroke-dasharray:8 7;animation:icTeacher 1.2s linear infinite}
+.ic .teacher-badge{fill:#f5f7fb;stroke:#d6deea;filter:drop-shadow(0 4px 8px rgba(51,65,85,.10))}
+.ic .teacher-text{fill:#536176;font-size:11px;font-weight:800}
+@keyframes icDraw{to{stroke-dashoffset:0}}
+@keyframes icFlow{to{stroke-dashoffset:-52}}
+@keyframes icTeacher{to{stroke-dashoffset:-30}}
+
+/* ---------- research comparison table ---------- */
+table.cmp{
+  width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;
+  border:1px solid var(--border);border-radius:14px;overflow:hidden;
+}
+table.cmp th,table.cmp td{padding:10px 14px;text-align:left;line-height:1.55;vertical-align:top}
+table.cmp thead th{
+  background:#f0f5fc;font-size:13px;font-weight:850;color:var(--text);
+  border-bottom:1px solid var(--border);
+}
+table.cmp thead th:first-child{width:110px;background:#f0f5fc;color:var(--muted);font-size:11.5px}
+table.cmp tbody th{
+  background:#f7fafd;font-weight:800;color:#34517e;font-size:11.5px;white-space:nowrap;
+  border-bottom:1px solid #edf2f9;
+}
+table.cmp tbody td{border-bottom:1px solid #edf2f9;color:var(--muted)}
+table.cmp tbody tr:last-child th,table.cmp tbody tr:last-child td{border-bottom:none}
+table.cmp tbody td b{color:var(--text);font-weight:750}
+table.cmp .venue{font-weight:800;color:var(--s1)}
+.rflow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:16px 4px 18px;font-size:12.5px;font-weight:750}
+.rflow .step{background:#fff;border:1px solid var(--border);border-radius:20px;padding:5px 14px;color:var(--text)}
+.rflow .arr{color:var(--s1);font-weight:900}
+
+/* ---------- education & awards ---------- */
+.edu{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.edu .e-block{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px 18px}
+.edu .e-school{font-size:15px;font-weight:850;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.edu .e-school .e-when{font-size:11px;color:var(--faint);font-weight:700}
+.edu .e-major{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.6}
+.edu .e-major b{color:var(--text)}
+.awards{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.awards span{font-size:11.5px;font-weight:750;color:#3f5222;background:#f3f8ea;border:1px solid #dcedc2;border-radius:20px;padding:4px 12px}
+.scores{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.scores span{font-size:11.5px;font-weight:800;color:#34517e;background:#eef3fa;border:1px solid #d5e2f2;border-radius:8px;padding:4px 12px}
+
+footer.foot{font-size:11.5px;color:var(--faint);text-align:center;line-height:1.8}
+
+@media (max-width:900px){
+  .map{grid-template-columns:1fr}
+  #links{display:none}
+  .edu{grid-template-columns:1fr}
+  .head .side{text-align:left}
+  table.cmp thead th:first-child{width:84px}
+}
+@media print{
+  nav{display:none}
+  body{background:#fff;padding:0}
+  .card{box-shadow:none;break-inside:avoid}
+  #links path{opacity:.55}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .ic .line-blue,.ic .line-purple{stroke-dashoffset:0}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="page">
+    <span class="brand">夏洋 · 简历</span>
+    <a href="#overview">总览</a>
+    <a href="#mapsec">技能图谱</a>
+    <a href="#intern">实习经历</a>
+    <a href="#research">科研经历</a>
+    <span class="spacer"></span>
+    <span class="contact">2027 届计算机硕士 · 后训练 / 训推算法</span>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- ============ header ============ -->
+  <div class="card" id="overview">
+    <div class="head">
+      <div>
+        <h1>夏洋</h1>
+        <div class="sub">
+          华中科技大学 <b>2027 届计算机硕士</b>（计算机科学与技术学院 · 计算机技术）· 男<br>
+        </div>
+      </div>
+      <div class="side">
+        <b>M202474219@hust.edu.cn</b><br>
+        18972968237<br>
+        硕士：华中科技大学（985）2024.09–2027.06<br>
+        本科：武汉理工大学（211）软件工程 2020.09–2024.06
+      </div>
+    </div>
+    <p class="lead">
+      面向<b>多任务、高并发、资源受限</b>场景，围绕 <b>模型能力整合 · 分层建模 · 业务闭环 · 训推优化</b>
+      四项能力，在 <b>2 段实习、7 个项目</b> 中交叉验证、闭环沉淀
+    </p>
+    <div style="height:20px"></div>
+
+    <h2 class="sec"><span class="num">00</span>教育经历与荣誉</h2>
+    <p class="sec-sub">华中科技大学（985，双一流）硕士 · 武汉理工大学（211，双一流）本科 · 专业第三、推荐免试攻读硕士</p>
+
+    <div class="edu">
+      <div class="e-block">
+        <div class="e-school">华中科技大学 <span class="e-when">2024.09 – 2027.06</span></div>
+        <div class="e-major">
+          计算机科学与技术学院 · <b>计算机技术</b>（硕士）<br>
+          研究方向：多任务模型融合 · 持续学习 · 大模型后训练
+        </div>
+      </div>
+      <div class="e-block">
+        <div class="e-school">武汉理工大学 <span class="e-when">2020.09 – 2024.06</span></div>
+        <div class="e-major">
+          计算机与人工智能学院 · <b>软件工程</b>（本科）<br>
+          专业第三 · 推荐免试攻读硕士
+        </div>
+      </div>
+    </div>
+
+    <div class="awards">
+      <span>全国大学生数学竞赛 一等奖</span>
+      <span>RAICOM 大学生程序设计竞赛 国家二等奖</span>
+      <span>湖北省大学生数学竞赛 一等奖</span>
+      <span>校一等奖学金</span>
+      <span>校三好学生</span>
+      <span>校优秀毕业生</span>
+      <span>校优秀共青团员</span>
+      <span>校优秀共青团干部</span>
+    </div>
+    <div class="scores">
+      <span>英语四级 597</span>
+      <span>英语六级 560</span>
+    </div>
+  </div>
+
+  <!-- ============ skill map ============ -->
+  <div class="card" id="mapsec">
+    <div class="map-head">
+      <h2 class="sec"><span class="num">01</span>技能 — 经历 关联图谱</h2>
+      <span class="hint"><kbd>悬停</kbd> 任意卡片高亮关联链路 · <kbd>点击</kbd> 技能卡跳转实习详情</span>
+    </div>
+
+    <div class="map" id="map">
+      <svg id="links" aria-hidden="true"></svg>
+
+      <div class="col" id="colSkills">
+        <div class="pillar" data-scope="s1" data-skill="s1" data-goto="p1">
+          <div class="p-name"><span class="p-dot"></span>模型能力整合</div>
+          <div class="p-sub">多任务学习 · 多任务模型融合 · 在线蒸馏和离线蒸馏 · 持续学习，缓解任务冲突与遗忘</div>
+          <span class="p-n">5 项</span>
+        </div>
+        <div class="pillar" data-scope="s2" data-skill="s2" data-goto="p1">
+          <div class="p-name"><span class="p-dot"></span>分层建模</div>
+          <div class="p-sub">LLM、BERT、Laya 等模型训练经验，结合级联、任务路由、思维链按需加载，实现难易样本分流</div>
+          <span class="p-n">3 项</span>
+        </div>
+        <div class="pillar" data-scope="s3" data-skill="s3" data-goto="p3">
+          <div class="p-name"><span class="p-dot"></span>业务闭环</div>
+          <div class="p-sub">用户模拟、数据构造、奖励设计、评测归因及 Guardrail 建设，推动模型能力持续演进</div>
+          <span class="p-n">3 项</span>
+        </div>
+        <div class="pillar" data-scope="s4" data-skill="s4" data-goto="p4">
+          <div class="p-name"><span class="p-dot"></span>训推优化</div>
+          <div class="p-sub">显存、并行策略、资源配比及关键超参优化训推流水线，提升训练吞吐、推理效率与资源利用率</div>
+          <span class="p-n">2 项</span>
+        </div>
+      </div>
+
+      <div class="col" id="colExp">
+        <div class="org">美团 · 履约平台技术部（2026.02–2026.10）</div>
+
+        <div class="exp" data-exp="e1" data-skills="s1 s2 s3 s4" data-goto="p1">
+          <span class="e-dots"><i style="background:var(--s1)"></i><i style="background:var(--s2)"></i><i style="background:var(--s3)"></i><i style="background:var(--s4)"></i></span>
+          <div class="e-body">
+            <div class="e-title">履约垂域模型后训练 <span class="e-metrics">F1 91% · GPU −73% · 万诉率 −0.8‰</span></div>
+            <div class="e-line">Qwen3-30B-A3B：SFT→RL→MOPD 多阶段后训练 · 专家粒度 PCGrad · HPD→GKD 蒸馏至 8B · 按需推理</div>
+          </div>
+        </div>
+
+        <div class="exp" data-exp="e2" data-skills="s2 s3" data-goto="p2">
+          <span class="e-dots"><i style="background:var(--s2)"></i><i style="background:var(--s3)"></i></span>
+          <div class="e-body">
+            <div class="e-title">安全护栏 / badcase 自动识别 <span class="e-metrics">F1 ≥ 85% · 建设周期 → 天级</span></div>
+            <div class="e-line">15+ 类标签体系 · Regex + BERT/Laya/Kev 级联 · 标签自迭代框架 · SQLite+Web 检测平台</div>
+          </div>
+        </div>
+
+        <div class="exp" data-exp="e3" data-skills="s1 s2 s3" data-goto="p3">
+          <span class="e-dots"><i style="background:var(--s1)"></i><i style="background:var(--s2)"></i><i style="background:var(--s3)"></i></span>
+          <div class="e-body">
+            <div class="e-title">骑手招聘 Agent（企微多轮） <span class="e-metrics">约面率 +12pp · bad case −0.8pp</span></div>
+            <div class="e-line">用户模拟器分层画像 · SFT→Agentic RL · 非对称在线自蒸馏 · 状态转移 + 语义质量奖励</div>
+          </div>
+        </div>
+
+        <div class="org">金山集团 · AI 产品中心（2025.11–2026.02）</div>
+
+        <div class="exp" data-exp="e4" data-skills="s4" data-goto="p4">
+          <span class="e-dots"><i style="background:var(--s4)"></i></span>
+          <div class="e-body">
+            <div class="e-title">RL 训练资源规划与调参 <span class="e-metrics">吞吐 +82% · 显存承载 +21%</span></div>
+            <div class="e-line">Dense/MoE 显存建模 · FSDP/Megatron 并行策略推导 · 同步/异步资源池最优配比</div>
+          </div>
+        </div>
+
+        <div class="org">科研 · 华中科技大学</div>
+
+        <div class="exp" data-exp="e5" data-skills="s1" data-goto="research">
+          <span class="e-dots"><i style="background:var(--s1)"></i></span>
+          <div class="e-body">
+            <div class="e-title">谱选择多任务模型融合 <span class="e-metrics">AAAI 2027 在审 · 独立一作</span></div>
+            <div class="e-line">截断 SVD 解耦权重更新，冻结方向、精调奇异值 · 多任务融合 SOTA，逼近联合训练上界</div>
+          </div>
+        </div>
+
+        <div class="exp" data-exp="e6" data-skills="s1" data-goto="research">
+          <span class="e-dots"><i style="background:var(--s1)"></i></span>
+          <div class="e-body">
+            <div class="e-title">ESTA-Fusion：SMoE 专家粒度融合 <span class="e-metrics">ARR 在审 · 独立一作</span></div>
+            <div class="e-line">无梯度稀疏 MoE 融合框架 · 路由门控加权专家输出幅值度量重要性 · 理论 + 实验双验证</div>
+          </div>
+        </div>
+
+        <div class="exp" data-exp="e7" data-skills="s1" data-goto="research">
+          <span class="e-dots"><i style="background:var(--s1)"></i></span>
+          <div class="e-body">
+            <div class="e-title">ODC-LoRA 大模型持续学习 <span class="e-metrics">湖北省"尖刀计划"</span></div>
+            <div class="e-line">LoRA 更新解耦方向与幅度 · 正交约束 + 幅度增量约束 · 类增量场景显著减轻遗忘</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span class="lg"><i style="background:var(--s1)"></i>模型能力整合</span>
+      <span class="lg"><i style="background:var(--s2)"></i>分层建模</span>
+      <span class="lg"><i style="background:var(--s3)"></i>业务闭环</span>
+      <span class="lg"><i style="background:var(--s4)"></i>训推优化</span>
+      <span class="note">连线 / 圆点颜色 = 项目调用的技能</span>
+    </div>
+
+    <div style="margin-top:16px">
+      <div class="chips">
+        <span>Qwen3-30B-A3B (MoE)</span><span>SFT → RL → MOPD</span><span>HPD / GKD 蒸馏</span><span>专家粒度 PCGrad</span>
+        <span>任务感知路由</span><span>思维链按需加载</span><span>Agentic RL</span><span>用户模拟器</span>
+        <span>非对称在线自蒸馏</span><span>Regex + BERT / Laya / Kev 级联</span><span>Guardrail</span>
+        <span>FSDP / Megatron</span><span>显存建模</span><span>截断 SVD</span><span>SMoE 融合</span><span>LoRA 持续学习</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ internships ============ -->
+  <div class="card" id="intern">
+    <h2 class="sec"><span class="num">02</span>实习经历</h2>
+    <p class="sec-sub">美团（后训练算法实习生 · 履约平台技术部 · AIGC 与数字化组）与金山集团（训推算法实习生 · AI 产品中心训推技术部）</p>
+
+    <!-- 美团 · 项目 1 -->
+    <div class="proj" id="p1">
+      <div class="p-head">
+        <span class="p-name">履约垂域模型后训练 —— 审核场景多任务学习</span>
+        <span class="p-badges" data-scope="s1"><b>模型能力整合</b><b>分层建模</b><b>业务闭环</b><b>训推优化</b></span>
+      </div>
+      <p class="p-bg">
+        <b>背景：</b>履约场景订单审核任务种类多（顾客位置无法进入、骑手虚假送达、骑手诱导用户取消等）、QPS 高，
+        基础模型精确率 / 召回率低，线上推理资源开销大、GPU 利用率低。
+      </p>
+      <div class="kv">
+        <span class="k">多阶段</span>
+        <span class="v">基于 <b>Qwen3-30B-A3B</b> 搭建 <b>SFT→RL→MOPD</b> 多阶段后训练流程，针对不同难度样本实现<b>按需推理</b>（思维链按需加载）</span>
+        <span class="k">多任务</span>
+        <span class="v">引入<b>专家粒度 PCGrad</b>、<b>任务感知路由</b>、动态调整学习率、在线动态采样，降低任务间干扰</span>
+        <span class="k">小型化</span>
+        <span class="v">构建 <b>HPD→GKD 两阶段蒸馏</b>将模型小型化至 8B</span>
+        <span class="k">上线</span>
+        <span class="v">结合不同地区数据分布进行<b>阈值调优</b>，模型已全量上线</span>
+      </div>
+      <div class="p-res">
+        各任务 precision 均 &gt; 90% · F1 平均 <em>91%</em> · 部署 GPU 资源降低 <em>73%</em> · 万诉率下降 <em>0.8‰</em>
+      </div>
+
+      <div class="chart-wrap ic">
+        <div class="chart-cap">30B 主模型迭代路径与 8B 小型化路径（F1）—— 30B 蒸馏为 8B 教师</div>
+        <svg viewBox="0 0 1120 400" role="img" aria-label="30B 与 8B 模型训练迭代 F1 曲线">
+          <defs>
+            <linearGradient id="icBlueGrad" x1="0" x2="1">
+              <stop offset="0" stop-color="#2d89ff"/><stop offset="1" stop-color="#1769e8"/>
+            </linearGradient>
+            <linearGradient id="icPurpleGrad" x1="0" x2="1">
+              <stop offset="0" stop-color="#8a6df0"/><stop offset="1" stop-color="#6d50d7"/>
+            </linearGradient>
+            <marker id="icAxisArrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+              <path d="M0 0L8 4 0 8Z" fill="#8e99aa"/>
+            </marker>
+            <marker id="icTeacherArrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+              <path d="M0 0L9 4.5 0 9Z" fill="#9aa6b8"/>
+            </marker>
+          </defs>
+          <g>
+            <line class="grid" x1="72" y1="315" x2="1060" y2="315"/>
+            <line class="grid" x1="72" y1="255" x2="1060" y2="255"/>
+            <line class="grid" x1="72" y1="195" x2="1060" y2="195"/>
+            <line class="grid" x1="72" y1="135" x2="1060" y2="135"/>
+            <line class="grid" x1="72" y1="75"  x2="1060" y2="75"/>
+            <line class="grid" x1="72" y1="45"  x2="1060" y2="45"/>
+            <line class="grid" x1="110" y1="45" x2="110" y2="315"/>
+            <line class="grid" x1="300" y1="45" x2="300" y2="315"/>
+            <line class="grid" x1="490" y1="45" x2="490" y2="315"/>
+            <line class="grid" x1="680" y1="45" x2="680" y2="315"/>
+            <line class="grid" x1="870" y1="45" x2="870" y2="315"/>
+            <line class="grid" x1="1030" y1="45" x2="1030" y2="315"/>
+            <path class="axis" d="M72 315V35" marker-end="url(#icAxisArrow)"/>
+            <path class="axis" d="M72 315H1072" marker-end="url(#icAxisArrow)"/>
+            <text class="axis-label" x="22" y="31">F1 (%)</text>
+            <text class="axis-label" x="1020" y="338">Pipeline</text>
+            <g class="tick-label" text-anchor="end">
+              <text x="62" y="319">74</text><text x="62" y="259">78</text><text x="62" y="199">82</text>
+              <text x="62" y="139">86</text><text x="62" y="79">90</text><text x="62" y="49">92</text>
+            </g>
+            <path class="line-shadow-blue" d="M110 295.5 L300 139.4 L490 112.4 L680 77.9 L870 58.4"/>
+            <path class="line-blue" d="M110 295.5 L300 139.4 L490 112.4 L680 77.9 L870 58.4"/>
+            <path class="flow-blue" d="M110 295.5 L300 139.4 L490 112.4 L680 77.9 L870 58.4"/>
+            <path class="line-shadow-purple" d="M110 282.0 L300 159.0 L1030 72.0"/>
+            <path class="line-purple" d="M110 282.0 L300 159.0 L1030 72.0"/>
+            <path class="flow-purple" d="M110 282.0 L300 159.0 L1030 72.0"/>
+            <g>
+              <circle class="dot-blue" cx="110" cy="295.5" r="8.5"/><circle class="dot-blue" cx="300" cy="139.4" r="8.5"/>
+              <circle class="dot-blue" cx="490" cy="112.4" r="8.5"/><circle class="dot-blue" cx="680" cy="77.9" r="8.5"/>
+              <circle class="dot-blue" cx="870" cy="58.4" r="8.5"/>
+            </g>
+            <g>
+              <circle class="dot-purple" cx="110" cy="282.0" r="8.5"/><circle class="dot-purple" cx="300" cy="159.0" r="8.5"/>
+              <circle class="dot-purple" cx="1030" cy="72.0" r="8.5"/>
+            </g>
+            <g text-anchor="middle">
+              <text class="value-blue" x="110" y="314">75.3%</text><text class="value-blue" x="300" y="123">85.7%</text>
+              <text class="value-blue" x="490" y="96">87.5%</text><text class="value-blue" x="680" y="62">89.8%</text>
+              <text class="value-blue" x="870" y="43">91.1%</text>
+              <text class="value-purple" x="110" y="267">76.2%</text><text class="value-purple" x="300" y="178">84.4%</text>
+              <text class="value-purple" x="1030" y="58">90.2%</text>
+            </g>
+            <g text-anchor="middle">
+              <text class="stage-label" x="110" y="350">Base</text><text class="sub-label" x="110" y="369">30B / 8B</text>
+              <text class="stage-label" x="300" y="350">+ Vanilla SFT</text><text class="sub-label" x="300" y="369">30B / 8B</text>
+              <text class="stage-label" x="490" y="350">+ Multi-Task SFT</text><text class="sub-label" x="490" y="369">30B</text>
+              <text class="stage-label" x="680" y="350">+ RL</text><text class="sub-label" x="680" y="369">30B</text>
+              <text class="stage-label" x="870" y="350">+ MOPD</text><text class="sub-label" x="870" y="369">30B</text>
+              <text class="stage-label" x="1030" y="350">+ HPD/GKD</text><text class="sub-label" x="1030" y="369">8B</text>
+            </g>
+            <path class="teacher-path" d="M886 62 C930 47, 978 51, 1015 68" marker-end="url(#icTeacherArrow)"/>
+            <rect class="teacher-badge" x="900" y="12" width="126" height="26" rx="8"/>
+            <text class="teacher-text" x="963" y="29" text-anchor="middle">30B模型作为教师</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 美团 · 项目 2 -->
+    <div class="proj" id="p2">
+      <div class="p-head">
+        <span class="p-name">安全护栏 / 自动化 badcase 识别</span>
+        <span class="p-badges" data-scope="s2"><b>分层建模</b><b>业务闭环</b></span>
+      </div>
+      <p class="p-bg">
+        <b>背景：</b>面向骑手助手、招聘外呼、企微招聘等 AIGC 场景，设计并落地基础安全与业务安全 <b>15+ 类标签检测体系</b>。
+      </p>
+      <div class="kv">
+        <span class="k">级联</span>
+        <span class="v">采用 <b>Regex + BERT / Laya / Kev 级联策略</b>：规则层兜底高频模式，小模型处理清晰样本，重模型只啃长尾难题</span>
+        <span class="k">自迭代</span>
+        <span class="v">设计标签细分场景拆解与<b>数据构造</b>方案，训练集与评测集持续迭代，沉淀<b>"冷启动 + 迭代循环"两阶段 Skill</b></span>
+        <span class="k">多任务</span>
+        <span class="v">在 <b>Laya 和 Kev</b> 上实现多任务和多标签学习</span>
+        <span class="k">平台</span>
+        <span class="v">搭建 <b>SQLite + Web 检测平台</b>支撑结果分析与迭代闭环</span>
+      </div>
+      <div class="p-res">
+        各标签 F1 ≥ <em>85%</em> · 标签检测能力建设周期压缩至 <em>天级</em>
+      </div>
+    </div>
+
+    <!-- 美团 · 项目 3 -->
+    <div class="proj" id="p3">
+      <div class="p-head">
+        <span class="p-name">骑手招聘 Agent（企微多轮）</span>
+        <span class="p-badges" data-scope="s3"><b>模型能力整合</b><b>分层建模</b><b>业务闭环</b></span>
+      </div>
+      <p class="p-bg">
+        <b>背景：</b>面向骑手招聘线索转化，搭建企微多轮招聘 Agent，实现候选人信息收集、岗位沟通及约面流程推进。
+      </p>
+      <div class="kv">
+        <span class="k">数据制备</span>
+        <span class="v">设计<b>用户模拟器和分层多维特征</b>，构造用户"功能 × 场景 × 角色"的外显画像和潜在顾虑</span>
+        <span class="k">模型训练</span>
+        <span class="v">构建 <b>SFT→Agentic RL 两阶段</b>训练流程；基于潜在顾虑设计<b>非对称在线自蒸馏</b>，引导模型主动探查用户顾虑；融合<b>用户状态转移奖励与语义质量奖励</b>，联合优化状态推进与拟人性 / 说服力</span>
+        <span class="k">评测归因</span>
+        <span class="v">构建自动检测 Benchmark，结合线上抽检开展 <b>bad case 聚类归因</b>，驱动数据、Skills 和 Guardrail 迭代</span>
+      </div>
+      <div class="p-res">
+        bad case 下降 <em>0.8pp</em> · 约面率提升 <em>12pp</em>
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-cap">用户模拟器 × Agentic RL 算法架构：RM-GRPO 控"怎么说" · 自蒸馏定"往哪探索" · 状态转移判"有没有推动用户"</div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="1064" height="520" viewBox="0 0 1064 520" role="img" aria-label="用户模拟器与 Agentic RL 算法架构图">
+          <defs>
+          <style>
+            .t-title{font-size:17px;font-weight:850;fill:#14233c}
+            .t-sec{font-size:15px;font-weight:820;fill:#14233c}
+            .t-card{font-size:13px;font-weight:800;fill:#14233c}
+            .t-body{font-size:11px;font-weight:560;fill:#55657c}
+            .t-small{font-size:10px;font-weight:560;fill:#6a788d}
+            .t-mini{font-size:9.3px;font-weight:560;fill:#758299}
+            .t-blue{fill:#1769e8}.t-green{fill:#12895e}.t-orange{fill:#b87718}.t-purple{fill:#6d50d7}
+            .center{text-anchor:middle}
+            .line{fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+            .flow{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-dasharray:4 8;animation:archFlow 3.5s linear infinite}
+            @keyframes archFlow{to{stroke-dashoffset:-48}}
+          </style>
+          <linearGradient id="bgBlue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eff7ff"/><stop offset="1" stop-color="#f9fcff"/></linearGradient>
+          <linearGradient id="bgGreen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#effaf5"/><stop offset="1" stop-color="#fbfefc"/></linearGradient>
+          <linearGradient id="bgOrange" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff8ec"/><stop offset="1" stop-color="#fffdf9"/></linearGradient>
+          <linearGradient id="bgPurple" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4f0ff"/><stop offset="1" stop-color="#fcfbff"/></linearGradient>
+          <filter id="soft" x="-5%" y="-10%" width="110%" height="130%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#234c89" flood-opacity=".05"/></filter>
+          <marker id="arrBlue" viewBox="0 0 8 8" markerWidth="6" markerHeight="6" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#1769e8"/></marker>
+          <marker id="arrGreen" viewBox="0 0 8 8" markerWidth="6" markerHeight="6" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#12a06a"/></marker>
+          <marker id="arrOrange" viewBox="0 0 8 8" markerWidth="6" markerHeight="6" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#d6952e"/></marker>
+          <marker id="arrPurple" viewBox="0 0 8 8" markerWidth="6" markerHeight="6" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#6d50d7"/></marker>
+          </defs>
+          <rect x=".5" y=".5" width="1063" height="519" rx="18" fill="#fff" stroke="#e2eaf6" filter="url(#soft)"/>
+          <text x="24" y="32" class="t-title">用户模拟器 × Agentic RL 算法架构</text>
+          <text x="300" y="31" class="t-body">Latent Concerns · Semantic Reward · State Transition · Joint Optimization</text>
+          <path d="M24 49H1040" stroke="#edf1f8"/>
+          <text x="30" y="78" class="t-sec t-blue">① 用户模拟器</text>
+          <text x="350" y="78" class="t-sec">② 算法优化</text>
+          <text x="828" y="78" class="t-sec t-purple">③ 联合优化</text>
+
+          <g>
+            <rect x="24" y="94" width="290" height="346" rx="14" fill="url(#bgBlue)" stroke="#c5dbfb"/>
+            <text x="169" y="121" class="t-card center t-blue">分层 User Simulator</text>
+            <text x="169" y="141" class="t-small center">外显行为 + 隐性决策因素 + 同步状态变化</text>
+            <rect x="44" y="158" width="250" height="70" rx="9" fill="#fff" stroke="#dfeaf9"/>
+            <text x="60" y="180" class="t-card">外显画像 P<tspan baseline-shift="super" font-size="9">ext</tspan></text>
+            <text x="60" y="201" class="t-body">功能 × 场景 × 角色</text>
+            <text x="60" y="218" class="t-small">控制交互风格与行为模式</text>
+            <rect x="44" y="240" width="250" height="86" rx="9" fill="#fff" stroke="#dfeaf9"/>
+            <text x="60" y="262" class="t-card">潜在顾虑 P<tspan baseline-shift="super" font-size="9">int</tspan></text>
+            <text x="60" y="283" class="t-body">隐性 concerns · 决策因素 · 解锁条件</text>
+            <rect x="206" y="249" width="72" height="20" rx="6" fill="#edf5ff"/>
+            <text x="242" y="263" class="t-mini center t-blue">训练期可见</text>
+            <text x="60" y="306" class="t-small">为 非对称自蒸馏 提供 concern-aware 监督</text>
+            <rect x="44" y="338" width="250" height="84" rx="9" fill="#fff" stroke="#dfeaf9"/>
+            <text x="60" y="360" class="t-card">同步用户状态</text>
+            <text x="60" y="382" class="t-body">Δw<tspan baseline-shift="sub" font-size="9">k</tspan> · concern progress · outcome</text>
+            <text x="60" y="403" class="t-small">为 用户状态转移 提供 turn-level credit signal</text>
+          </g>
+
+          <g>
+            <rect x="350" y="94" width="430" height="96" rx="13" fill="url(#bgOrange)" stroke="#f0d3a3"/>
+            <text x="370" y="120" class="t-card t-orange">RM-GRPO｜语义质量优化</text>
+            <text x="760" y="120" class="t-small t-orange" text-anchor="end">Response Quality</text>
+            <text x="370" y="148" class="t-body">信号</text>
+            <rect x="410" y="132" width="72" height="30" rx="7" fill="#fff"/>
+            <text x="446" y="152" class="t-small center">拟人性</text>
+            <rect x="490" y="132" width="84" height="30" rx="7" fill="#fff"/>
+            <text x="532" y="152" class="t-small center">说服能力</text>
+            <text x="594" y="148" class="t-body">作用</text>
+            <text x="634" y="148" class="t-small">评价“这一轮说得好不好”</text>
+            <text x="760" y="174" class="t-body t-orange" text-anchor="end">A<tspan baseline-shift="super" font-size="9">RM</tspan><tspan baseline-shift="sub" font-size="9">i,k</tspan></text>
+          </g>
+
+          <g>
+            <rect x="350" y="204" width="430" height="96" rx="13" fill="url(#bgBlue)" stroke="#c5dbfb"/>
+            <text x="370" y="230" class="t-card t-blue">非对称在线自蒸馏</text>
+            <text x="760" y="230" class="t-small t-blue" text-anchor="end">Exploration Prior</text>
+            <text x="370" y="258" class="t-body">信号</text>
+            <rect x="410" y="242" width="158" height="30" rx="7" fill="#fff" stroke="#e2ecfa"/>
+            <text x="489" y="262" class="t-small center">对话 + Latent Concerns</text>
+            <text x="590" y="258" class="t-body">作用</text>
+            <text x="630" y="258" class="t-small">引导主动探查隐性顾虑</text>
+            <text x="760" y="284" class="t-body t-blue" text-anchor="end">Distillation Loss</text>
+          </g>
+
+          <g>
+            <rect x="350" y="314" width="430" height="126" rx="13" fill="url(#bgGreen)" stroke="#bde1cd"/>
+            <text x="370" y="340" class="t-card t-green">用户状态转移优化</text>
+            <text x="760" y="340" class="t-small t-green" text-anchor="end">State-aware Credit</text>
+            <text x="370" y="369" class="t-body">信号</text>
+            <rect x="410" y="351" width="118" height="34" rx="7" fill="#fff" stroke="#dcefe5"/>
+            <text x="469" y="372" class="t-small center">terminal outcome</text>
+            <rect x="538" y="351" width="116" height="34" rx="7" fill="#fff" stroke="#dcefe5"/>
+            <text x="596" y="372" class="t-small center">Δw<tspan baseline-shift="sub" font-size="8">k</tspan> / progress</text>
+            <text x="676" y="369" class="t-body">作用</text>
+            <text x="716" y="369" class="t-small">判断是否推动用户</text>
+            <text x="760" y="402" class="t-body t-green" text-anchor="end">A<tspan baseline-shift="super" font-size="9">st</tspan><tspan baseline-shift="sub" font-size="9">i,k</tspan></text>
+            <text x="565" y="426" class="t-mini center">trajectory outcome 定方向 · turn-level transition 做 credit assignment</text>
+          </g>
+
+          <path d="M294 283H330Q340 283 340 257Q340 252 350 252" class="line" stroke="#9bbced" marker-end="url(#arrBlue)"/>
+          <path d="M294 283H330Q340 283 340 257Q340 252 347 252" class="flow" stroke="#1769e8"/>
+          <path d="M294 382H330Q340 382 340 377Q340 377 350 377" class="line" stroke="#9fd7bd" marker-end="url(#arrGreen)"/>
+          <path d="M294 382H347" class="flow" stroke="#12a06a"/>
+
+          <g>
+            <rect x="820" y="126" width="220" height="132" rx="13" fill="url(#bgPurple)" stroke="#d6cbf5"/>
+            <text x="930" y="154" class="t-card center t-purple">Hybrid-PG</text>
+            <text x="930" y="176" class="t-small center">语义质量 × 用户状态推进</text>
+            <rect x="840" y="192" width="180" height="38" rx="8" fill="#fff" stroke="#e7e0f8"/>
+            <text x="930" y="215" class="t-body center">A<tspan baseline-shift="super" font-size="9">hybrid</tspan><tspan baseline-shift="sub" font-size="9">i,k</tspan> = A<tspan baseline-shift="super" font-size="9">state</tspan><tspan baseline-shift="sub" font-size="9">i,k</tspan> + βA<tspan baseline-shift="super" font-size="9">RM</tspan><tspan baseline-shift="sub" font-size="9">i,k</tspan></text>
+            <text x="930" y="246" class="t-mini center">融合 RM-GRPO 与 用户状态转移 advantage</text>
+          </g>
+
+          <g>
+            <rect x="820" y="292" width="220" height="118" rx="13" fill="#faf8ff" stroke="#d6cbf5"/>
+            <text x="930" y="320" class="t-card center t-purple">Joint Objective</text>
+            <text x="930" y="341" class="t-small center">Distillation + Policy Gradient</text>
+            <rect x="840" y="356" width="180" height="34" rx="8" fill="#fff" stroke="#e7e0f8"/>
+            <text x="930" y="378" class="t-body center">L = L<tspan baseline-shift="sub" font-size="8">AOPD</tspan> + λL<tspan baseline-shift="sub" font-size="8">Hybrid-PG</tspan></text>
+          </g>
+
+          <path d="M780 146H798Q808 146 808 170Q808 182 820 182" class="line" stroke="#ddb56b" marker-end="url(#arrOrange)"/>
+          <path d="M780 146H798Q808 146 808 170Q808 182 817 182" class="flow" stroke="#d6952e"/>
+          <path d="M780 377H798Q808 377 808 238Q808 226 820 226" class="line" stroke="#8fcfb0" marker-end="url(#arrGreen)"/>
+          <path d="M780 377H798Q808 377 808 238Q808 226 817 226" class="flow" stroke="#12a06a"/>
+          <path d="M780 252H802Q812 252 812 336Q812 348 820 348" class="line" stroke="#8db4ee" marker-end="url(#arrBlue)"/>
+          <path d="M780 252H802Q812 252 812 336Q812 348 817 348" class="flow" stroke="#1769e8"/>
+          <path d="M930 258V292" class="line" stroke="#9e84df" marker-end="url(#arrPurple)"/>
+          <path d="M930 258V289" class="flow" stroke="#6d50d7"/>
+
+          <rect x="24" y="464" width="1016" height="34" rx="9" fill="#fafbfe" stroke="#e7ebf2"/>
+          <text x="42" y="486" class="t-small">RM-GRPO：控制“怎么说”　｜　非对称自蒸馏：决定“往哪里探索”　｜　用户状态转移：判断“有没有推动用户”</text>
+          <text x="1020" y="486" class="t-small t-purple" text-anchor="end">RM-GRPO + 用户状态转移 → Hybrid-PG；AOPD + Hybrid-PG → Joint Objective</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 金山 -->
+    <div class="proj" id="p4">
+      <div class="p-head">
+        <span class="p-name">强化学习流水线优化（训推资源规划与调参）</span>
+        <span class="p-badges" data-scope="s4"><b>训推优化</b></span>
+      </div>
+      <p class="p-bg">
+        <b>问题：</b>强化学习训练存在 <b>OOM</b>、rollout 与 update 吞吐低、资源供需失衡等问题，人工调参难以灵活适配不同配置。
+      </p>
+      <div class="kv">
+        <span class="k">显存建模</span>
+        <span class="v">对 <b>Dense / MoE 各尺寸模型、各阶段</b>的显存占用进行建模，给出训练与推理的最低显存配置</span>
+        <span class="k">并行策略</span>
+        <span class="v">针对<b>同步和异步资源池</b>、<b>FSDP 和 Megatron 框架</b>，推导给定硬件配置下最优参数组合与并行策略</span>
+        <span class="k">方法论</span>
+        <span class="v">形成<b>可复用的资源规划与调参方法</b>，替代人工经验调优</span>
+      </div>
+      <div class="p-res">
+        实现 OOM 问题规避 · 单卡有效显存承载能力提升 <em>21%</em> · 端到端 RL 训练吞吐提升 <em>82%</em>
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-cap">Dense / MoE 显存建模与资源规划：给定硬件配置下的最优参数组合与并行策略</div>
+        <img src="3/pic.png" alt="强化学习训练资源规划图：Dense 与 MoE 各尺寸模型显存占用建模及最优并行策略" loading="lazy">
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ research ============ -->
+  <div class="card" id="research">
+    <h2 class="sec"><span class="num">03</span>科研经历 —— 细粒度模型融合</h2>
+    <p class="sec-sub">
+      问题：预训练模型通常针对不同任务分别微调，多模型并行部署带来显存、存储、维护与推理成本；联合多任务训练又需要重新集中训练数据并进行昂贵训练。
+      <b>模型融合的优势：低训练成本 + 低部署成本 + 能力可组合。</b>
+    </p>
+
+    <div class="rflow">
+      <span style="font-size:11.5px;font-weight:800;color:var(--faint)">研究思路</span>
+      <span class="step">发现异质性</span><span class="arr">→</span>
+      <span class="step">构造诊断信号</span><span class="arr">→</span>
+      <span class="step">细粒度融合</span><span class="arr">→</span>
+      <span class="step">理论与实验验证</span>
+    </div>
+
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Spectral-Selective Merging</th>
+          <th>Expert-Slot Task Allocation（ESTA-Fusion）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>研究对象</th>
+          <td><b>Dense / LoRA 权重矩阵</b></td>
+          <td><b>Sparse MoE</b></td>
+        </tr>
+        <tr>
+          <th>细粒度单元</th>
+          <td>SVD Rank Component（秩一矩阵）</td>
+          <td>Expert Slot</td>
+        </tr>
+        <tr>
+          <th>核心问题</th>
+          <td>哪些秩一矩阵方向是<b>冲突方向</b></td>
+          <td>任务知识应<b>分配到哪个专家</b></td>
+        </tr>
+        <tr>
+          <th>诊断信号</th>
+          <td>Magnitude × Alignment（WSAR 冲突度量）</td>
+          <td>Gate × Expert Output Norm（ESTR 关联度）</td>
+        </tr>
+        <tr>
+          <th>投递情况</th>
+          <td><span class="venue">AAAI 2027 在审（Phase 1 通过）· 独立一作</span></td>
+          <td><span class="venue">ARR 在审 · 独立一作</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="height:18px"></div>
+
+    <div class="proj" style="margin-bottom:14px">
+      <div class="p-head">
+        <span class="p-name">谱选择模型融合（Spectral-Selective Merging）</span>
+        <span class="p-badges"><b>AAAI 2027 在审</b><b>独立一作</b></span>
+      </div>
+      <div class="kv">
+        <span class="k">诊断</span>
+        <span class="v">实验发现性能下降与"大幅度权重更新集中于冲突方向"密切相关；发现模型融合失败主要来自<b>高能量但方向不一致的谱成分</b>，提出 <b>WSAR</b> 衡量冲突程度</span>
+        <span class="k">方法</span>
+        <span class="v">利用<b>截断 SVD</b> 将权重更新解耦为奇异向量与奇异值，<b>冻结方向、精细调节奇异值</b>——保留有用方向、抑制冲突方向；建立理论解释并提出 SSM 方法</span>
+        <span class="k">结果</span>
+        <span class="v">在图像和文本分类的多任务模型融合场景实现 <b>SOTA</b>（CLIP、Flan-T5 等 benchmark），准确率逼近联合多任务训练的经验上界</span>
+      </div>
+      <div class="p-res">
+        论文《Diagnosing and Mitigating Spectral Conflict in Model Merging via <em>Spectral-Selective Merging</em>》· AAAI 2027 在审（Phase 1 通过，独立一作）
+      </div>
+    </div>
+
+    <div class="proj" style="margin-bottom:14px">
+      <div class="p-head">
+        <span class="p-name">SMoE 专家粒度融合（ESTA-Fusion）</span>
+        <span class="p-badges"><b>ARR 在审</b><b>独立一作</b></span>
+      </div>
+      <div class="kv">
+        <span class="k">诊断</span>
+        <span class="v">现有多任务模型融合方法忽视 SMoE 同层内不同专家的<b>任务偏好差异</b>；发现 <b>layer-level 粒度太粗</b>，会丢失 expert specialization</span>
+        <span class="k">方法</span>
+        <span class="v">提出新的 expert-slot task allocation 视角与 <b>ESTR relevance score</b>，以<b>路由门控加权的专家输出幅值</b>衡量 task-expert 关联；无梯度稀疏 MoE 融合框架，在专家粒度分配融合权重</span>
+        <span class="k">结果</span>
+        <span class="v"><b>理论证明 + 大规模实验</b>验证细粒度 allocation 有效性，更好保留各任务专家输出的分布特征</span>
+      </div>
+      <div class="p-res">
+        论文《<em>ESTA-Fusion: Expert-Slot Task Allocation for Sparse MoE Model Merging</em>》· 投递至 ARR（独立一作）
+      </div>
+    </div>
+
+    <div class="proj" style="margin-bottom:0">
+      <div class="p-head">
+        <span class="p-name">ODC-LoRA：大模型持续学习</span>
+        <span class="p-badges"><b>湖北省政府"尖刀计划"</b><b>2024.12–2025.10</b></span>
+      </div>
+      <div class="kv">
+        <span class="k">问题</span>
+        <span class="v">参数扩展式持续微调为各任务独立训练 LoRA，推理阶段难以选择性激活；直接融合多 LoRA 又因参数冲突导致性能退化</span>
+        <span class="k">方法</span>
+        <span class="v">将 LoRA 更新<b>解耦为方向与幅度</b>，对方向施加<b>正交约束</b>、对幅度增量施加变化约束，平衡稳定性与可塑性</span>
+        <span class="k">结果</span>
+        <span class="v">在图像和文本分类的<b>类增量场景</b>下显著减轻遗忘</span>
+      </div>
+      <div class="p-res">
+        论文《<em>ODC-LoRA: An Efficient and Extended Continuous Learning Method Based on Orthogonal Decoupling and Combination</em>》
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">
+    技能与经历相互印证：科研定义方法（融合 / 蒸馏 / 持续学习），实习把方法推向线上（F1 91% · GPU −73% · 吞吐 +82%），业务闭环让模型能力持续演进。<br>
+    夏洋 · M202474219@hust.edu.cn · 18972968237
+  </footer>
+</div>
+
+<script>
+/* ---------- skill map links ---------- */
+const LINKS = [
+  ["s1","e1"],["s1","e3"],["s1","e5"],["s1","e6"],["s1","e7"],
+  ["s2","e1"],["s2","e2"],["s2","e3"],
+  ["s3","e1"],["s3","e2"],["s3","e3"],
+  ["s4","e1"],["s4","e4"],
+];
+const HUE = {s1:"#2a78d6", s2:"#eb6834", s3:"#1baf7a", s4:"#eda100"};
+
+const mapEl  = document.getElementById("map");
+const svg    = document.getElementById("links");
+const pillars= [...document.querySelectorAll(".pillar")];
+const exps   = [...document.querySelectorAll(".exp")];
+const paths  = [];
+
+function anchor(el, side){
+  const m = mapEl.getBoundingClientRect(), r = el.getBoundingClientRect();
+  return { x:(side==="r"? r.right : r.left) - m.left,
+           y: r.top + r.height/2 - m.top };
+}
+function draw(){
+  svg.setAttribute("viewBox", `0 0 ${mapEl.clientWidth} ${mapEl.clientHeight}`);
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+  paths.length = 0;
+  const sBox = {}, eBox = {};
+  pillars.forEach(p => sBox[p.dataset.skill] = anchor(p, "r"));
+  exps.forEach(e  => eBox[e.dataset.exp]    = anchor(e, "l"));
+  LINKS.forEach(([s, e]) => {
+    const a = sBox[s], b = eBox[e];
+    const dx = Math.max(36, (b.x - a.x) * 0.5);
+    const p  = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    p.setAttribute("d", `M${a.x} ${a.y} C${a.x+dx} ${a.y}, ${b.x-dx} ${b.y}, ${b.x} ${b.y}`);
+    p.setAttribute("stroke", HUE[s]);
+    p.dataset.skill = s; p.dataset.exp = e;
+    svg.appendChild(p);
+    paths.push(p);
+  });
+}
+
+function focus(kind, key){
+  paths.forEach(p => p.classList.toggle("dim", kind ? p.dataset[kind] !== key : false));
+  pillars.forEach(p => {
+    const on = !kind || (kind === "skill" ? p.dataset.skill === key
+                                   : LINKS.some(([s,e]) => s === p.dataset.skill && e === key));
+    p.classList.toggle("dim", !on);
+    p.classList.toggle("lit", on && !!kind);
+  });
+  exps.forEach(e => {
+    const on = !kind || (kind === "exp" ? e.dataset.exp === key
+                                  : e.dataset.skills.split(" ").includes(key));
+    e.classList.toggle("dim", !on);
+    e.classList.toggle("lit", on && !!kind);
+  });
+}
+
+pillars.forEach(p => {
+  p.addEventListener("mouseenter", () => focus("skill", p.dataset.skill));
+  p.addEventListener("mouseleave", () => focus(null));
+  p.addEventListener("click", () => {
+    const t = document.getElementById(p.dataset.goto);
+    if(t) t.scrollIntoView({behavior:"smooth", block:"start"});
+  });
+});
+exps.forEach(e => {
+  e.addEventListener("mouseenter", () => focus("exp", e.dataset.exp));
+  e.addEventListener("mouseleave", () => focus(null));
+  e.addEventListener("click", () => {
+    const t = document.getElementById(e.dataset.goto);
+    if(t) t.scrollIntoView({behavior:"smooth", block:"start"});
+  });
+});
+
+new ResizeObserver(draw).observe(mapEl);
+window.addEventListener("load", draw);
+draw();
+</script>
+</body>
+</html>

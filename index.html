@@ -76,7 +76,7 @@ h2.sec .num{
   font:inherit;font-weight:800;color:var(--text);
   background:#eef3fa;border:1px solid #d8e2f0;border-radius:6px;padding:1px 7px;
 }
-.map{position:relative;display:grid;grid-template-columns:290px 1fr;min-height:100px}
+.map{position:relative;display:grid;grid-template-columns:290px 1fr;column-gap:150px;min-height:100px}
 #links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
 #links path{fill:none;stroke-width:2.5;stroke-linecap:round;opacity:.8;transition:opacity .18s}
 .col{position:relative;z-index:1;display:flex;flex-direction:column;gap:12px}
@@ -555,6 +555,11 @@ footer.foot{font-size:11.5px;color:var(--faint);text-align:center;line-height:1.
       <div class="p-res">
         各标签 F1 ≥ <em>85%</em> · 标签检测能力建设周期压缩至 <em>天级</em>
       </div>
+
+      <div class="chart-wrap">
+        <div class="chart-cap">标签检测体系：基础安全与业务安全 15+ 类标签 · Regex + BERT/Laya/Kev 级联 · 标签自迭代框架</div>
+        <img src="material/安全护栏.png" alt="安全护栏标签检测体系图：15+ 类标签与级联检测策略" loading="lazy">
+      </div>
     </div>
 
     <!-- 美团 · 项目 3 -->
@@ -735,7 +740,7 @@ footer.foot{font-size:11.5px;color:var(--faint);text-align:center;line-height:1.
 
       <div class="chart-wrap">
         <div class="chart-cap">Dense / MoE 显存建模与资源规划：给定硬件配置下的最优参数组合与并行策略</div>
-        <img src="3/pic.png" alt="强化学习训练资源规划图：Dense 与 MoE 各尺寸模型显存占用建模及最优并行策略" loading="lazy">
+        <img src="material/pic.png" alt="强化学习训练资源规划图：Dense 与 MoE 各尺寸模型显存占用建模及最优并行策略" loading="lazy">
       </div>
     </div>
   </div>
@@ -811,6 +816,11 @@ footer.foot{font-size:11.5px;color:var(--faint);text-align:center;line-height:1.
       <div class="p-res">
         论文《Diagnosing and Mitigating Spectral Conflict in Model Merging via <em>Spectral-Selective Merging</em>》· AAAI 2027 在审（Phase 1 通过，独立一作）
       </div>
+
+      <div class="chart-wrap">
+        <div class="chart-cap">SSM 框架：截断 SVD 解耦权重更新 → 谱成分按 WSAR 诊断 → Proxy Loss 调节奇异值、冻结方向</div>
+        <img src="material/SSM-Framework.png" alt="谱选择模型融合框架图：截断 SVD 解耦与谱调节" loading="lazy">
+      </div>
     </div>
 
     <div class="proj" style="margin-bottom:14px">
@@ -828,6 +838,11 @@ footer.foot{font-size:11.5px;color:var(--faint);text-align:center;line-height:1.
       </div>
       <div class="p-res">
         论文《<em>ESTA-Fusion: Expert-Slot Task Allocation for Sparse MoE Model Merging</em>》· 投递至 ARR（独立一作）
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-cap">ESTA 框架：任务×专家 ESTR 关联度估计（路由门控 × 专家输出幅值）→ Expert-Slot 连续分配</div>
+        <img src="material/ESTA-Framework.png" alt="ESTA-Fusion 框架图：ESTR 相关度计算与专家槽任务分配" loading="lazy">
       </div>
     </div>
 

@@ -544,11 +544,11 @@ footer.foot{font-size:11.5px;color:var(--faint);text-align:center;line-height:1.
       </p>
       <div class="kv">
         <span class="k">级联</span>
-        <span class="v">采用 <b>Regex + BERT / Laya / Kev 级联策略</b>：规则层兜底高频模式，小模型处理清晰样本，重模型只啃长尾难题</span>
+        <span class="v">采用 <b>CPU（Regex/KNN）+ GPU（BERT/Laya/Kev）级联策略</b>：规则层兜底高频模式，小模型处理清晰样本，重模型只啃长尾难题</span>
         <span class="k">自迭代</span>
-        <span class="v">设计标签细分场景拆解与<b>数据构造</b>方案，训练集与评测集持续迭代，沉淀<b>"冷启动 + 迭代循环"两阶段 Skill</b></span>
+        <span class="v">设计细分场景拆解与<b>数据构造</b>方案，训练集与评测集持续迭代，沉淀<b>"冷启动 + 迭代循环"两阶段 Skill</b></span>
         <span class="k">多任务</span>
-        <span class="v">在 <b>Laya 和 Kev</b> 上实现多任务和多标签学习</span>
+        <span class="v">由<b>单标签二分类</b>向<b>多标签和多任务</b>聚合</span>
         <span class="k">平台</span>
         <span class="v">搭建 <b>SQLite + Web 检测平台</b>支撑结果分析与迭代闭环</span>
       </div>
@@ -559,6 +559,11 @@ footer.foot{font-size:11.5px;color:var(--faint);text-align:center;line-height:1.
       <div class="chart-wrap">
         <div class="chart-cap">标签检测体系：基础安全与业务安全 15+ 类标签 · Regex + BERT/Laya/Kev 级联 · 标签自迭代框架</div>
         <img src="material/安全护栏.png" alt="安全护栏标签检测体系图：15+ 类标签与级联检测策略" loading="lazy">
+      </div>
+
+      <div class="chart-wrap">
+        <div class="chart-cap">"冷启动 + 迭代循环"两阶段 Skill：阶段一建立 v₀（标签标准 → Regex 初筛 → LLM 打标 → 人工复核 Gold → 训练评估 → 全量扫描）；阶段二误差归因 → 回流 → Hard Case 合成 → 重训 → 验收（P≥90% / R≥80%）→ 下一轮</div>
+        <iframe src="material/two_stage_workflow.html" title="标签识别模型冷启动与迭代闭环流程图" loading="lazy" style="width:100%;height:640px;border:0;border-radius:10px;background:#fff"></iframe>
       </div>
     </div>
 

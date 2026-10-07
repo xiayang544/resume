@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>标签识别模型 · 冷启动与迭代闭环</title>
+<style>
+:root{color-scheme:light}
+body{margin:0;background:#f7f9fd;color:#14233c;font-family:"Noto Sans CJK SC","PingFang SC","Microsoft YaHei",Arial,sans-serif}
+.workflow-page{padding:34px 18px}
+.workflow-card{box-sizing:border-box;width:100%;max-width:1600px;margin:0 auto;padding:18px;border:1px solid #dfe8f6;border-radius:26px;background:linear-gradient(145deg,#f8fbff,#fff 54%,#faf8ff);box-shadow:0 20px 58px rgba(37,80,145,.10);overflow:auto}
+.workflow-card svg{display:block;width:100%;min-width:1180px;height:auto}
+.workflow-card text{font-family:"Noto Sans CJK SC","PingFang SC","Microsoft YaHei",Arial,sans-serif;text-rendering:optimizeLegibility}
+.wf-title{font-size:23px;font-weight:850;fill:#14233c}
+.wf-subtitle{font-size:12.5px;font-weight:600;fill:#66768d}
+.wf-section-kicker{font-size:12px;font-weight:800;fill:#53647d;letter-spacing:.5px}
+.wf-legend{font-size:10px;font-weight:650;fill:#66768d}
+.wf-input-title{font-size:13px;font-weight:800;fill:#172640}
+.wf-stage-title{font-size:17px;font-weight:850;fill:#fff}
+.wf-stage-note{font-size:10.5px;font-weight:650;fill:#64738a}
+.wf-node-title{font-size:12.2px;font-weight:820;fill:#172640}
+.wf-body{font-size:10.2px;font-weight:570;fill:#586981}
+.wf-stepid{font-size:8.7px;font-weight:650;fill:#8796aa}
+.wf-num{font-size:11px;font-weight:850;fill:#fff}
+.wf-label{font-size:9.3px;font-weight:700;fill:#64738a}
+.wf-branch{font-size:9.2px;font-weight:700;fill:#b87718}
+.wf-caption-title{font-size:11px;font-weight:820;fill:#314762}
+.wf-caption{font-size:9.7px;font-weight:590;fill:#64738a}
+.wf-final{font-size:10.4px;font-weight:760;fill:#12895e}
+.wf-footer{font-size:10px;font-weight:600;fill:#5e6e84}
+.wf-line{fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.wf-flow{fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:4 8;animation:wf-flow 3.5s linear infinite}
+.wf-box{transition:filter .18s ease,stroke-width .18s ease}
+.wf-node:hover .wf-box{filter:drop-shadow(0 5px 8px rgba(37,80,145,.13));stroke-width:1.8}
+@keyframes wf-flow{to{stroke-dashoffset:-48}}
+@media (prefers-reduced-motion:reduce){.wf-flow{animation:none}}
+@media(max-width:760px){.workflow-page{padding:12px 6px}.workflow-card{padding:8px;border-radius:16px}}
+@media print{@page{size:landscape;margin:8mm}body{background:#fff}.workflow-page{padding:0}.workflow-card{box-shadow:none;border:none;padding:0}.wf-flow{animation:none}}
+</style>
+</head>
+<body>
+<main class="workflow-page">
+  <div class="workflow-card">
+    <svg xmlns="http://www.w3.org/2000/svg" width="1540" height="1120" viewBox="0 0 1540 1120" role="img" aria-labelledby="wf-title wf-desc">
+      <title id="wf-title">标签识别模型冷启动与迭代闭环</title>
+      <desc id="wf-desc">阶段一从标签标准、Regex、LLM 标注和人工复核建立 v0，并训练评估模型后进行全量扫描；阶段二基于扫描结果持续采样、多模型标注、人工复核、FP/FN 归因、标准更新、Hard Case 合成、重训、重新扫描，并按 Precision Recall 与回归指标决定是否继续下一轮。</desc>
+      <defs>
+        <filter id="soft" x="-5%" y="-5%" width="110%" height="115%"><feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#234c89" flood-opacity=".045"/></filter>
+        <linearGradient id="stage1bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5fbff"/><stop offset="1" stop-color="#fbfdff"/></linearGradient>
+        <linearGradient id="stage2bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5fff8"/><stop offset="1" stop-color="#fbfffc"/></linearGradient>
+        <marker id="arrow-gray" viewBox="0 0 8 8" markerWidth="5" markerHeight="5" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#8ba0bd"/></marker>
+        <marker id="arrow-blue" viewBox="0 0 8 8" markerWidth="5.5" markerHeight="5.5" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#1769e8"/></marker>
+        <marker id="arrow-purple" viewBox="0 0 8 8" markerWidth="5.5" markerHeight="5.5" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8Z" fill="#6d50d7"/></marker>
+      </defs>
+<rect x=".5" y=".5" width="1539" height="1119" rx="24" fill="#fff" stroke="#dfe8f6" filter="url(#soft)"/>
+<text x="30" y="42" class="wf-title">标签识别模型：冷启动 + 迭代闭环</text>
+<text x="30" y="66" class="wf-subtitle">从标签标准、Regex 初筛和 LLM 标注，到模型训练、Gold 验收与持续迭代</text>
+<circle cx="1040" cy="42" r="4" fill="#1769e8"/><text x="1050" y="46" class="wf-legend">标准/扫描</text>
+<circle cx="1133" cy="42" r="4" fill="#6d50d7"/><text x="1143" y="46" class="wf-legend">标注/数据</text>
+<circle cx="1226" cy="42" r="4" fill="#c07a16"/><text x="1236" y="46" class="wf-legend">人工/决策</text>
+<circle cx="1319" cy="42" r="4" fill="#12895e"/><text x="1329" y="46" class="wf-legend">训练/评估</text>
+<circle cx="1412" cy="42" r="4" fill="#c84e6d"/><text x="1422" y="46" class="wf-legend">误差/回流</text>
+<path d="M30 80H1510" stroke="#edf1f8"/>
+<text x="30" y="105" class="wf-section-kicker">项目输入与运行约束</text>
+<g class="wf-node"><rect class="wf-box" x="30" y="118" width="355" height="76" rx="12" fill="#eff7ff" stroke="#bdd7fb"/><circle cx="52" cy="140" r="10" fill="#1769e8" opacity=".9"/><text x="72" y="144" class="wf-input-title">用户输入</text><text x="48" y="168" class="wf-body">标签定义 / 人工标注样本</text><text x="48" y="184" class="wf-body">问题场景与业务边界</text></g>
+<g class="wf-node"><rect class="wf-box" x="405" y="118" width="355" height="76" rx="12" fill="#f5f1ff" stroke="#d7ccf5"/><circle cx="427" cy="140" r="10" fill="#6d50d7" opacity=".9"/><text x="447" y="144" class="wf-input-title">task.yaml + data_schema</text><text x="423" y="168" class="wf-body">上下文轮数 / 候选模型</text><text x="423" y="184" class="wf-body">验收指标：P≥90% / R≥80%</text></g>
+<g class="wf-node"><rect class="wf-box" x="780" y="118" width="355" height="76" rx="12" fill="#eefafa" stroke="#bfe2df"/><circle cx="802" cy="140" r="10" fill="#128b83" opacity=".9"/><text x="822" y="144" class="wf-input-title">线上全量数据</text><text x="798" y="168" class="wf-body">按日期增长的线上文件</text><text x="798" y="184" class="wf-body">支持 since / append 增量处理</text></g>
+<g class="wf-node"><rect class="wf-box" x="1155" y="118" width="355" height="76" rx="12" fill="#effaf5" stroke="#bde1cd"/><circle cx="1177" cy="140" r="10" fill="#12895e" opacity=".9"/><text x="1197" y="144" class="wf-input-title">候选模型与运行环境</text><text x="1173" y="168" class="wf-body">BERT/laya/Kev</text></g>
+<path d="M207.5 194V208" stroke="#c9d5e6" stroke-width="1.1"/>
+<path d="M582.5 194V208" stroke="#c9d5e6" stroke-width="1.1"/>
+<path d="M957.5 194V208" stroke="#c9d5e6" stroke-width="1.1"/>
+<path d="M1332.5 194V208" stroke="#c9d5e6" stroke-width="1.1"/>
+<path d="M207.5 208H1332.5" stroke="#c9d5e6" stroke-width="1.1"/>
+<path class="wf-flow" d="M395 208V236" stroke="#1769e8" marker-end="url(#arrow-blue)"/>
+<rect x="18" y="222" width="742" height="842" rx="18" fill="url(#stage1bg)" stroke="#7dc0ee" stroke-width="1.4" stroke-dasharray="5 5"/>
+<rect x="780" y="222" width="742" height="842" rx="18" fill="url(#stage2bg)" stroke="#78cba0" stroke-width="1.4" stroke-dasharray="5 5"/>
+<rect x="30" y="232" width="382" height="44" rx="10" fill="#1774c9"/><text x="48" y="260" class="wf-stage-title">阶段一 · 方案设计与冷启动（v_0）</text>
+<text x="430" y="258" class="wf-stage-note">建立第一版标准、训练数据、模型与扫描结果</text>
+<rect x="792" y="232" width="392" height="44" rx="10" fill="#14865f"/><text x="810" y="260" class="wf-stage-title">阶段二 · 迭代循环（v_1 … v_k）</text>
+<text x="1200" y="258" class="wf-stage-note">误差归因 → 回流 → 重训 → 验收 → 下一轮</text>
+<g class="wf-node" data-step="step_01_init">
+<rect class="wf-box" x="34" y="296" width="218" height="108" rx="12" fill="#eff7ff" stroke="#bdd7fb"/>
+<circle cx="54" cy="315" r="12" fill="#1769e8"/>
+<text x="54" y="319" text-anchor="middle" class="wf-num">1</text>
+<text x="76" y="321" class="wf-node-title">初始化 v_0</text>
+<text x="50" y="345" class="wf-body" text-anchor="start">创建 manifest / status</text>
+<text x="50" y="360" class="wf-body" text-anchor="start">检查数据、模型与配置</text>
+<text x="240" y="394" class="wf-stepid" text-anchor="end">step_01_init</text>
+</g>
+<g class="wf-node" data-step="step_02_standard_design">
+<rect class="wf-box" x="271" y="296" width="218" height="108" rx="12" fill="#fff8ec" stroke="#f0d3a3"/>
+<circle cx="291" cy="315" r="12" fill="#c07a16"/>
+<text x="291" y="319" text-anchor="middle" class="wf-num">2</text>
+<text x="313" y="321" class="wf-node-title">标签标准设计</text>
+<text x="287" y="345" class="wf-body" text-anchor="start">label_definition / scenes</text>
+<text x="287" y="360" class="wf-body" text-anchor="start">boundary cases；人工确认</text>
+<text x="477" y="394" class="wf-stepid" text-anchor="end">step_02_standard_design</text>
+</g>
+<g class="wf-node" data-step="step_03_regex">
+<rect class="wf-box" x="508" y="296" width="218" height="108" rx="12" fill="#eff7ff" stroke="#bdd7fb"/>
+<circle cx="528" cy="315" r="12" fill="#1769e8"/>
+<text x="528" y="319" text-anchor="middle" class="wf-num">3</text>
+<text x="550" y="321" class="wf-node-title">Regex 初筛设计</text>
+<text x="524" y="345" class="wf-body" text-anchor="start">regex config / cases / report</text>
+<text x="524" y="360" class="wf-body" text-anchor="start">全量初筛 + 漏召回抽样</text>
+<text x="714" y="394" class="wf-stepid" text-anchor="end">step_03_regex</text>
+</g>
+<g class="wf-node" data-step="step_04_llm_prompt">
+<rect class="wf-box" x="508" y="422" width="218" height="108" rx="12" fill="#f5f1ff" stroke="#d7ccf5"/>
+<circle cx="528" cy="441" r="12" fill="#6d50d7"/>
+<text x="528" y="445" text-anchor="middle" class="wf-num">4</text>
+<text x="550" y="447" class="wf-node-title">LLM 打标 Prompt</text>
+<text x="524" y="471" class="wf-body" text-anchor="start">输出 label / scene_id / reason</text>
+<text x="524" y="486" class="wf-body" text-anchor="start">上下文轮数严格按配置</text>
+<text x="714" y="520" class="wf-stepid" text-anchor="end">step_04_llm_prompt</text>
+</g>
+<g class="wf-node" data-step="step_05_coldstart_labeling">
+<rect class="wf-box" x="271" y="422" width="218" height="108" rx="12" fill="#f5f1ff" stroke="#d7ccf5"/>
+<circle cx="291" cy="441" r="12" fill="#6d50d7"/>
+<text x="291" y="445" text-anchor="middle" class="wf-num">5</text>
+<text x="313" y="447" class="wf-node-title">冷启动采样 + LLM</text>
+<text x="287" y="471" class="wf-body" text-anchor="start">Regex 召回中采样 2000</text>
+<text x="287" y="486" class="wf-body" text-anchor="start">LongCat-Flash-Chat 打标</text>
+<text x="477" y="520" class="wf-stepid" text-anchor="end">step_05_coldstart_labeling</text>
+</g>
+<g class="wf-node" data-step="step_06_human_review">
+<rect class="wf-box" x="34" y="422" width="218" height="108" rx="12" fill="#fff8ec" stroke="#f0d3a3"/>
+<circle cx="54" cy="441" r="12" fill="#c07a16"/>
+<text x="54" y="445" text-anchor="middle" class="wf-num">6</text>
+<text x="76" y="447" class="wf-node-title">人工复核 + Gold</text>
+<text x="50" y="471" class="wf-body" text-anchor="start">全正例 + 负例抽样</text>
+<text x="50" y="486" class="wf-body" text-anchor="start">human_verified 写入全局 Gold</text>
+<text x="240" y="520" class="wf-stepid" text-anchor="end">step_06_human_review</text>
+</g>
+<g class="wf-node" data-step="step_07_calibration">
+<rect class="wf-box" x="34" y="548" width="218" height="108" rx="12" fill="#fff1f4" stroke="#efc7d2"/>
+<circle cx="54" cy="567" r="12" fill="#c84e6d"/>
+<text x="54" y="571" text-anchor="middle" class="wf-num">7</text>
+<text x="76" y="573" class="wf-node-title">数据校准</text>
+<text x="50" y="597" class="wf-body" text-anchor="start">FP/FN / scene / boundary</text>
+<text x="50" y="612" class="wf-body" text-anchor="start">更新标准、Prompt、Regex</text>
+<text x="240" y="646" class="wf-stepid" text-anchor="end">step_07_calibration</text>
+</g>
+<g class="wf-node" data-step="step_08_synthesis_prompts">
+<rect class="wf-box" x="271" y="548" width="218" height="108" rx="12" fill="#f5f1ff" stroke="#d7ccf5"/>
+<circle cx="291" cy="567" r="12" fill="#6d50d7"/>
+<text x="291" y="571" text-anchor="middle" class="wf-num">8</text>
+<text x="313" y="573" class="wf-node-title">生成合成 Prompt</text>
+<text x="287" y="597" class="wf-body" text-anchor="start">按 scene 构建 synthesis prompt</text>
+<text x="287" y="612" class="wf-body" text-anchor="start">依据最新正负/边界 case</text>
+<text x="477" y="646" class="wf-stepid" text-anchor="end">step_08_synthesis_prompts</text>
+</g>
+<g class="wf-node" data-step="step_09_synthesis">
+<polygon class="wf-box" points="617.0,548 726,602.0 617.0,656 508,602.0" fill="#fff8ec" stroke="#f0d3a3"/>
+<circle cx="532" cy="568" r="12" fill="#c07a16"/>
+<text x="532" y="572" text-anchor="middle" class="wf-num">9</text>
+<text x="617.0" y="586" class="wf-node-title" text-anchor="middle">是否需要合成？</text>
+<text x="617.0" y="606" class="wf-body" text-anchor="middle">正例率 &lt;20% 或 scene&lt;20</text>
+<text x="617.0" y="621" class="wf-body" text-anchor="middle">需要：3 模型 × 100 正例</text>
+<text x="714" y="646" class="wf-stepid" text-anchor="end">step_09_synthesis</text>
+</g>
+<g class="wf-node" data-step="step_10_build_dataset">
+<rect class="wf-box" x="508" y="674" width="218" height="108" rx="12" fill="#f5f1ff" stroke="#d7ccf5"/>
+<circle cx="528" cy="693" r="12" fill="#6d50d7"/>
+<text x="528" y="697" text-anchor="middle" class="wf-num">10</text>
+<text x="550" y="699" class="wf-node-title">构建 v_0 数据集</text>
+<text x="524" y="723" class="wf-body" text-anchor="start">train：模型标注 + 合成</text>
+<text x="524" y="738" class="wf-body" text-anchor="start">validation 仅人工；Gold 隔离</text>
+<text x="714" y="772" class="wf-stepid" text-anchor="end">step_10_build_dataset</text>
+</g>
+<g class="wf-node" data-step="step_11_train_model">
+<rect class="wf-box" x="271" y="674" width="218" height="108" rx="12" fill="#effaf5" stroke="#bde1cd"/>
+<circle cx="291" cy="693" r="12" fill="#12895e"/>
+<text x="291" y="697" text-anchor="middle" class="wf-num">11</text>
+<text x="313" y="699" class="wf-node-title">训练与调优</text>
+<text x="287" y="738" class="wf-body" text-anchor="start">超参网格 + threshold 搜索</text>
+<text x="477" y="772" class="wf-stepid" text-anchor="end">step_11_train_bert</text>
+</g>
+<g class="wf-node" data-step="step_12_evaluate">
+<rect class="wf-box" x="34" y="674" width="218" height="108" rx="12" fill="#effaf5" stroke="#bde1cd"/>
+<circle cx="54" cy="693" r="12" fill="#12895e"/>
+<text x="54" y="697" text-anchor="middle" class="wf-num">12</text>
+<text x="76" y="699" class="wf-node-title">模型评估</text>
+<text x="50" y="723" class="wf-body" text-anchor="start">validation / regression / Gold</text>
+<text x="50" y="738" class="wf-body" text-anchor="start">Precision / Recall / F1</text>
+<text x="240" y="772" class="wf-stepid" text-anchor="end">step_12_evaluate</text>
+</g>
+<g class="wf-node" data-step="step_13_full_scan">
+<rect class="wf-box" x="34" y="800" width="218" height="108" rx="12" fill="#eff7ff" stroke="#bdd7fb"/>
+<circle cx="54" cy="819" r="12" fill="#1769e8"/>
+<text x="54" y="823" text-anchor="middle" class="wf-num">13</text>
+<text x="76" y="825" class="wf-node-title">全量数据扫描</text>
+<text x="50" y="849" class="wf-body" text-anchor="start">当前 Regex + 最优模型</text>
+<text x="50" y="864" class="wf-body" text-anchor="start">产出 predictions / union positive</text>
+<text x="240" y="898" class="wf-stepid" text-anchor="end">step_13_full_scan</text>
+</g>
+<g class="wf-node" data-step="step_14_report">
+<rect class="wf-box" x="271" y="800" width="218" height="108" rx="12" fill="#effaf5" stroke="#bde1cd"/>
+<circle cx="291" cy="819" r="12" fill="#12895e"/>
+<text x="291" y="823" text-anchor="middle" class="wf-num">14</text>
+<text x="313" y="825" class="wf-node-title">输出 v_0 报告</text>
+<text x="287" y="849" class="wf-body" text-anchor="start">指标、场景、数据规模、问题</text>
+<text x="287" y="864" class="wf-body" text-anchor="start">status=completed → 进入迭代</text>
+<text x="477" y="898" class="wf-stepid" text-anchor="end">step_14_report</text>
+</g>
+<g class="wf-node">
+<rect class="wf-box" x="508" y="800" width="218" height="108" rx="12" fill="#f5f1ff" stroke="#d7ccf5" stroke-width="1.4"/>
+<path d="M524 821h18l5 6h22v26H524Z" fill="#6d50d7" opacity=".92"/>
+<text x="578" y="831" class="wf-node-title">产出 v_0 完整快照</text>
+<text x="526" y="858" class="wf-body">standard / dataset / training</text>
+<text x="526" y="873" class="wf-body">metrics / scan / report</text>
+</g>
+<path class="wf-line" d="M252 350.0L271 350.0" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M489 350.0L508 350.0" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M617.0 404V413.0H617.0V422" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M508 476.0L489 476.0" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M271 476.0L252 476.0" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M143.0 530V539.0H143.0V548" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M252 602.0L271 602.0" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M489 602.0L508 602.0" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M617.0 656V665.0H617.0V674" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M508 728.0L489 728.0" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M271 728.0L252 728.0" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M143.0 782V791.0H143.0V800" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M252 854.0L271 854.0" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M489 854.0L508 854.0" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<text x="638" y="663" class="wf-branch yes">需要 / 跳过合成都进入数据集构建</text>
+<rect x="34" y="935" width="692" height="103" rx="12" fill="#f8fbff" stroke="#dbe7f5"/>
+<text x="50" y="958" class="wf-caption-title">关键约束</text>
+<text x="50" y="979" class="wf-caption" text-anchor="start">• Gold 全局独立，不进入 train / validation；验收以 Gold 为准。</text>
+<text x="50" y="996" class="wf-caption" text-anchor="start">• validation 仅允许人工复核样本；训练与推理使用一致的上下文拼接逻辑。</text>
+<text x="50" y="1013" class="wf-caption" text-anchor="start">• 标签边界重大变化时，流程会暂停等待人工确认。</text>
+<g class="wf-node" data-step="step_01_new_version">
+<rect class="wf-box" x="796" y="296" width="218" height="108" rx="12" fill="#eff7ff" stroke="#bdd7fb"/>
+<circle cx="816" cy="315" r="12" fill="#1769e8"/>
+<text x="816" y="319" text-anchor="middle" class="wf-num">1</text>
+<text x="838" y="321" class="wf-node-title">创建新版本</text>
+<text x="812" y="345" class="wf-body" text-anchor="start">复制上一轮 standard</text>
+<text x="812" y="360" class="wf-body" text-anchor="start">记录 parent_version；不回写历史</text>
+<text x="1002" y="394" class="wf-stepid" text-anchor="end">step_01_new_version</text>
+</g>
+<g class="wf-node" data-step="step_02_sampling">
+<rect class="wf-box" x="1033" y="296" width="218" height="108" rx="12" fill="#eff7ff" stroke="#bdd7fb"/>
+<circle cx="1053" cy="315" r="12" fill="#1769e8"/>
+<text x="1053" y="319" text-anchor="middle" class="wf-num">2</text>
+<text x="1075" y="321" class="wf-node-title">迭代样本采样</text>
+<text x="1049" y="345" class="wf-body" text-anchor="start">上一轮扫描结果为输入</text>
+<text x="1049" y="360" class="wf-body" text-anchor="start">全正例 + 3×负例；优先难例</text>
+<text x="1239" y="394" class="wf-stepid" text-anchor="end">step_02_sampling</text>
+</g>
+<g class="wf-node" data-step="step_03_llm_labeling">
+<rect class="wf-box" x="1270" y="296" width="218" height="108" rx="12" fill="#f5f1ff" stroke="#d7ccf5"/>
+<circle cx="1290" cy="315" r="12" fill="#6d50d7"/>
+<text x="1290" y="319" text-anchor="middle" class="wf-num">3</text>
+<text x="1312" y="321" class="wf-node-title">三模型独立打标</text>
+<text x="1286" y="345" class="wf-body" text-anchor="start">LongCat-2.0 / Flash / DeepSeek</text>
+<text x="1286" y="360" class="wf-body" text-anchor="start">保留独立结果并执行 vote</text>
+<text x="1476" y="394" class="wf-stepid" text-anchor="end">step_03_llm_labeling</text>
+</g>
+<g class="wf-node" data-step="step_04_human_review">
+<rect class="wf-box" x="1270" y="422" width="218" height="108" rx="12" fill="#fff8ec" stroke="#f0d3a3"/>
+<circle cx="1290" cy="441" r="12" fill="#c07a16"/>
+<text x="1290" y="445" text-anchor="middle" class="wf-num">4</text>
+<text x="1312" y="447" class="wf-node-title">人工复核 + Gold</text>
+<text x="1286" y="471" class="wf-body" text-anchor="start">分歧/失败 + 5% 一致抽检</text>
+<text x="1286" y="486" class="wf-body" text-anchor="start">新增 verified 样本追加到 Gold</text>
+<text x="1476" y="520" class="wf-stepid" text-anchor="end">step_04_human_review</text>
+</g>
+<g class="wf-node" data-step="step_05_error_analysis">
+<rect class="wf-box" x="1033" y="422" width="218" height="108" rx="12" fill="#fff1f4" stroke="#efc7d2"/>
+<circle cx="1053" cy="441" r="12" fill="#c84e6d"/>
+<text x="1053" y="445" text-anchor="middle" class="wf-num">5</text>
+<text x="1075" y="447" class="wf-node-title">FP / FN 归因</text>
+<text x="1049" y="471" class="wf-body" text-anchor="start">LLM 辅助 error_type 初稿</text>
+<text x="1049" y="486" class="wf-body" text-anchor="start">最终以人工归因为准</text>
+<text x="1239" y="520" class="wf-stepid" text-anchor="end">step_05_error_analysis</text>
+</g>
+<g class="wf-node" data-step="step_06_standard_update">
+<rect class="wf-box" x="796" y="422" width="218" height="108" rx="12" fill="#fff8ec" stroke="#f0d3a3"/>
+<circle cx="816" cy="441" r="12" fill="#c07a16"/>
+<text x="816" y="445" text-anchor="middle" class="wf-num">6</text>
+<text x="838" y="447" class="wf-node-title">标签标准更新</text>
+<text x="812" y="471" class="wf-body" text-anchor="start">scene / boundary / Prompt / Regex</text>
+<text x="812" y="486" class="wf-body" text-anchor="start">重大变化再次等待人工确认</text>
+<text x="1002" y="520" class="wf-stepid" text-anchor="end">step_06_standard_update</text>
+</g>
+<g class="wf-node" data-step="step_07_regression_reflow">
+<rect class="wf-box" x="796" y="548" width="218" height="108" rx="12" fill="#fff1f4" stroke="#efc7d2"/>
+<circle cx="816" cy="567" r="12" fill="#c84e6d"/>
+<text x="816" y="571" text-anchor="middle" class="wf-num">7</text>
+<text x="838" y="573" class="wf-node-title">真实 FP/FN 回流</text>
+<text x="812" y="597" class="wf-body" text-anchor="start">禁止直接加入 train</text>
+<text x="812" y="612" class="wf-body" text-anchor="start">统一进入 regression_eval_delta</text>
+<text x="1002" y="646" class="wf-stepid" text-anchor="end">step_07_regression_reflow</text>
+</g>
+<g class="wf-node" data-step="step_08_hardcase_synthesis">
+<rect class="wf-box" x="1033" y="548" width="218" height="108" rx="12" fill="#f5f1ff" stroke="#d7ccf5"/>
+<circle cx="1053" cy="567" r="12" fill="#6d50d7"/>
+<text x="1053" y="571" text-anchor="middle" class="wf-num">8</text>
+<text x="1075" y="573" class="wf-node-title">Hard Case 合成</text>
+<text x="1049" y="597" class="wf-body" text-anchor="start">按 scene_id × error_type 分层</text>
+<text x="1049" y="612" class="wf-body" text-anchor="start">默认 FP/FN 数量 × 3</text>
+<text x="1239" y="646" class="wf-stepid" text-anchor="end">step_08_hardcase_synthesis</text>
+</g>
+<g class="wf-node" data-step="step_09_build_dataset">
+<rect class="wf-box" x="1270" y="548" width="218" height="108" rx="12" fill="#f5f1ff" stroke="#d7ccf5"/>
+<circle cx="1290" cy="567" r="12" fill="#6d50d7"/>
+<text x="1290" y="571" text-anchor="middle" class="wf-num">9</text>
+<text x="1312" y="573" class="wf-node-title">构建当前轮训练集</text>
+<text x="1286" y="597" class="wf-body" text-anchor="start">上一轮 train + synthetic + vote</text>
+<text x="1286" y="612" class="wf-body" text-anchor="start">真实 FP/FN 仍不进入 train</text>
+<text x="1476" y="646" class="wf-stepid" text-anchor="end">step_09_build_dataset</text>
+</g>
+<g class="wf-node" data-step="step_10_retrain">
+<rect class="wf-box" x="1270" y="674" width="218" height="108" rx="12" fill="#effaf5" stroke="#bde1cd"/>
+<circle cx="1290" cy="693" r="12" fill="#12895e"/>
+<text x="1290" y="697" text-anchor="middle" class="wf-num">10</text>
+<text x="1312" y="699" class="wf-node-title">重新训练</text>
+<text x="1286" y="723" class="wf-body" text-anchor="start">超参搜索 + 训练 + threshold</text>
+<text x="1286" y="738" class="wf-body" text-anchor="start">validation / regression 评估</text>
+<text x="1476" y="772" class="wf-stepid" text-anchor="end">step_10_retrain</text>
+</g>
+<g class="wf-node" data-step="step_11_evaluate">
+<rect class="wf-box" x="1033" y="674" width="218" height="108" rx="12" fill="#effaf5" stroke="#bde1cd"/>
+<circle cx="1053" cy="693" r="12" fill="#12895e"/>
+<text x="1053" y="697" text-anchor="middle" class="wf-num">11</text>
+<text x="1075" y="699" class="wf-node-title">模型评估</text>
+<text x="1049" y="723" class="wf-body" text-anchor="start">当前版 vs 上一版</text>
+<text x="1049" y="738" class="wf-body" text-anchor="start">Gold 指标 / scene recall / regression</text>
+<text x="1239" y="772" class="wf-stepid" text-anchor="end">step_11_evaluate</text>
+</g>
+<g class="wf-node" data-step="step_12_regex_miss_check">
+<rect class="wf-box" x="796" y="674" width="218" height="108" rx="12" fill="#eff7ff" stroke="#bdd7fb"/>
+<circle cx="816" cy="693" r="12" fill="#1769e8"/>
+<text x="816" y="697" text-anchor="middle" class="wf-num">12</text>
+<text x="838" y="699" class="wf-node-title">Regex 漏召回检查</text>
+<text x="812" y="723" class="wf-body" text-anchor="start">抽样 rejected_sample</text>
+<text x="812" y="738" class="wf-body" text-anchor="start">发现 regex_miss → 更新 + 回归</text>
+<text x="1002" y="772" class="wf-stepid" text-anchor="end">step_12_regex_miss_check</text>
+</g>
+<g class="wf-node" data-step="step_13_full_scan">
+<rect class="wf-box" x="796" y="800" width="218" height="108" rx="12" fill="#eff7ff" stroke="#bdd7fb"/>
+<circle cx="816" cy="819" r="12" fill="#1769e8"/>
+<text x="816" y="823" text-anchor="middle" class="wf-num">13</text>
+<text x="838" y="825" class="wf-node-title">全量扫描</text>
+<text x="812" y="849" class="wf-body" text-anchor="start">当前 Regex 初筛 + 模型精筛</text>
+<text x="812" y="864" class="wf-body" text-anchor="start">结果成为下一轮采样输入</text>
+<text x="1002" y="898" class="wf-stepid" text-anchor="end">step_13_full_scan</text>
+</g>
+<g class="wf-node" data-step="step_14_acceptance">
+<polygon class="wf-box" points="1142.0,800 1251,854.0 1142.0,908 1033,854.0" fill="#fff8ec" stroke="#f0d3a3"/>
+<circle cx="1057" cy="820" r="12" fill="#c07a16"/>
+<text x="1057" y="824" text-anchor="middle" class="wf-num">14</text>
+<text x="1142.0" y="838" class="wf-node-title" text-anchor="middle">是否达到验收？</text>
+<text x="1142.0" y="858" class="wf-body" text-anchor="middle">P≥0.90 / R≥0.80</text>
+<text x="1142.0" y="873" class="wf-body" text-anchor="middle">同时检查 regression 与停止保护</text>
+<text x="1239" y="898" class="wf-stepid" text-anchor="end">step_14_acceptance</text>
+</g>
+<g class="wf-node" data-step="step_15_report">
+<rect class="wf-box" x="1270" y="800" width="218" height="108" rx="12" fill="#effaf5" stroke="#bde1cd"/>
+<circle cx="1290" cy="819" r="12" fill="#12895e"/>
+<text x="1290" y="823" text-anchor="middle" class="wf-num">15</text>
+<text x="1312" y="825" class="wf-node-title">每轮报告</text>
+<text x="1286" y="849" class="wf-body" text-anchor="start">report.md + status=completed</text>
+<text x="1286" y="864" class="wf-body" text-anchor="start">达标/停止保护→最终输出</text>
+<text x="1476" y="898" class="wf-stepid" text-anchor="end">step_15_report</text>
+</g>
+<path class="wf-line" d="M1014 350.0L1033 350.0" stroke="#8499b5" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M1251 350.0L1270 350.0" stroke="#8499b5" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M1379.0 404V413.0H1379.0V422" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M1270 476.0L1251 476.0" stroke="#8499b5" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M1033 476.0L1014 476.0" stroke="#8499b5" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M905.0 530V539.0H905.0V548" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M1014 602.0L1033 602.0" stroke="#8499b5" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M1251 602.0L1270 602.0" stroke="#8499b5" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M1379.0 656V665.0H1379.0V674" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M1270 728.0L1251 728.0" stroke="#6c947d" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M1033 728.0L1014 728.0" stroke="#6c947d" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M905.0 782V791.0H905.0V800" stroke="#7e95b6" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M1014 854.0L1033 854.0" stroke="#6c947d" marker-end="url(#arrow-gray)"/>
+<path class="wf-line" d="M1251 854.0L1270 854.0" stroke="#6c947d" marker-end="url(#arrow-gray)"/>
+<path class="wf-flow" d="M1488 854.0H1506V286Q1506 282 1500 282H905.0V296" stroke="#6d50d7" marker-end="url(#arrow-purple)"/>
+<rect x="1248" y="273" width="84" height="18" rx="5" fill="#fff" opacity=".96"/>
+<text x="1290" y="286" class="wf-label" text-anchor="middle">未达标且未触发停止保护</text>
+<rect x="1230" y="941" width="260" height="42" rx="10" fill="#f0fbf5" stroke="#acd9bf"/>
+<path d="M1250 952v20M1250 952h18l-5 6 5 6h-18" fill="none" stroke="#12895e" stroke-width="2" stroke-linejoin="round"/>
+<text x="1280" y="968" class="wf-final">accepted=true 或触发停止保护 → 最终输出</text>
+<rect x="796" y="990" width="692" height="48" rx="12" fill="#f7fcf9" stroke="#d9ede2"/>
+<text x="812" y="1012" class="wf-caption-title">闭环原则</text>
+<text x="900" y="1012" class="wf-caption">扫描 → 采样 → 多 LLM → 人工 → 归因/更新 → 回流/重训 → 评估/验收 → 下一轮</text>
+<text x="812" y="1030" class="wf-caption">真实 FP/FN 用于 regression；Hard Case synthetic 用于训练，避免把验收样本直接喂回训练。</text>
+<rect x="30" y="1078" width="1480" height="26" rx="8" fill="#faf8ff" stroke="#e1daf7"/>
+    </svg>
+  </div>
+</main>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"7939e04a4baf43c8b86a560f74aac60e","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
